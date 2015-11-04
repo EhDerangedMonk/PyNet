@@ -1,12 +1,14 @@
 #!/usr/bin/python           # This is the client 
-#V0.2
+#V0.21
 
 # If you call the program with an IP as a command line argument it will connect to that ip instead of using the file
 # Toggle variable inputOrder from 1 to 0 to run with opposite pairs of walls
+# Now shouldn't result in GUI reading everything at once
 
 #Issues:
-#			May or may not result in gui reading everything at once
-#			Code is super sloppy, could easily be shorter/more optimized
+#			Code is super sloppy, could easily be shorter
+#			Pretty sure a couple chunks of code can now be cut by turning type into a variable earlier on
+#				Window and Door sections once had varying parameters and now they're the same apart from type
 
 
 #####IMPORTS#####
@@ -17,29 +19,42 @@ import re
 #####END IMPORTS#####
 
 #####FUNCTIONS#####
+def redoOldFile(file):
+   file.seek(0,0)
+   lines = file.readlines()
+   file.seek(0)
+   file.truncate()
+   n = 0
+   while (n<len(lines)):
+      if(lines[n] == "]\n" or lines[n] == "]" or lines[n] == "  }\n"):
+         pass
+      else:
+         file.write(lines[n])
+      n = n + 1
+   
 def fOutput(file, x1, x2, y1, y2, type):
-
-   file.write(",\n")
+   redoOldFile(file)
+   file.write("  },\n")
    file.write("  {\n")     
    file.write("    \"y2\": " + str(y2) + ",\n")
    file.write("    \"type\": \"" + str(type) + "\",\n")
    file.write("    \"x2\": " + str(x2) + ",\n")
    file.write("    \"y1\": " + str(y1) + ",\n")
    file.write("    \"x1\": " + str(x1) + "\n")
-   file.write("  }")
-
+   file.write("  }\n")
+   file.write("]")
    return
    
 def fOutputNoComma(file, x1, x2, y1, y2, type):
-
+   redoOldFile(file)
    file.write("  {\n")     
    file.write("    \"y2\": " + str(y2) + ",\n")
    file.write("    \"type\": \"" + str(type) + "\",\n")
    file.write("    \"x2\": " + str(x2) + ",\n")
    file.write("    \"y1\": " + str(y1) + ",\n")
    file.write("    \"x1\": " + str(x1) + "\n")
-   file.write("  }")
-
+   file.write("  }\n")
+   file.write("]")
    return
 
 ###Ensures that objects being placed within room do not exceed room boundaries
@@ -69,9 +84,7 @@ def checkDimensioning(x1, x2, y1, y2, maxX, maxY):
 s = socket.socket()         # Create a socket
 port = 12345                # Reserve a port
 ipLine = "192.168.2.109"
-f = open('data.txt', 'w') 	#Wipes old file
-f.close()
-f = open('data.txt', 'a')	#reopens file stream in append mode
+f = open('data.txt', 'w+') 	#Wipes old file
 mess = "The beginning"
 wallCount = 0
 needComma = 0
@@ -94,6 +107,7 @@ if (len(sys.argv)<2):
 
 else:
    ipLine = sys.argv[1]
+   print("Attempting to connect to ip : " + ipLine)
    while(pattern.match(ipLine) == None):
       print("The only acceptable argument that can be given to this program is an IP\n Please enter the IP of the server you wish to connect to.")
       ipLine = input()
@@ -109,13 +123,18 @@ while(connectionSuccess == 0):
       while(pattern.match(ipLine) == None):
          print("The only acceptable argument that can be given to this program is an IP\n Please enter the IP of the server you wish to connect to.")
          ipLine = input()
+		 
+print("Connected! Processing data input")
+
 f.write("[\n")
+f.write("\n]\n")
+
+
 #####END CONNECTION STUFF#####
 
 #####MESSAGE HANDLING#####
 while mess != "THE END":				#while server says there is more to come
    mess = s.recv(1024).decode('utf-8') 	#accept input
-   print(mess)
 
    if mess != "THE END":   #write input to file
    ###Default assumption was opposite walls will be provided (ie Left/Right/Top/Bot)
@@ -259,7 +278,7 @@ while mess != "THE END":				#while server says there is more to come
          print("UNKNOWN CODE")
 
    else:
-      f.write("\n]\n")
+      print("Received Program Closure Code")
 #####END MESSAGE HANDLING#####
 
 s.close()                   # Close the socket when done
