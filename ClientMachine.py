@@ -6,7 +6,6 @@
 # Now shouldn't result in GUI reading everything at once
 
 #Issues:
-#			Code is super sloppy, could easily be shorter
 #			Pretty sure a couple chunks of code can now be cut by turning type into a variable earlier on
 #				Window and Door sections once had varying parameters and now they're the same apart from type
 
@@ -209,14 +208,14 @@ while mess != "THE END":				#while server says there is more to come
             if(inputOrder == 0):
                pDimensions = checkDimensioning(0, 0, windowLoc[1], result, wallX, wallY)
             elif(inputOrder == 1):
-               pDimensions = checkDimensioning(wallX - windocLoc[1], wallX - result, wallY, wallY, wallX, wallY)
+               pDimensions = checkDimensioning(max(int(wallX) - int(windocLoc[1]),0), max(int(wallX) - int(result), 0), wallY, wallY, wallX, wallY)
             fOutput(f, pDimensions[0], pDimensions[1], pDimensions[2], pDimensions[3], "Window")
 
          elif(windowLoc[0] == 4):
             if(inputOrder == 0):
                pDimensions = checkDimensioning(wallX, wallX, windowLoc[1], result, wallX, wallY)
             elif(inputOrder == 1):
-               pDimensions = checkDimensioning(0, 0, windowLoc[1], result, wallX, wallY)
+               pDimensions = checkDimensioning(0, 0, max(int(wallY) - int(windowLoc[1]), 0), max(int(wallY) -int(result),0), wallX, wallY)
             fOutput(f, pDimensions[0], pDimensions[1], pDimensions[2], pDimensions[3], "Window")
 
       elif mess[1] == 'O':
@@ -265,13 +264,13 @@ while mess != "THE END":				#while server says there is more to come
                pDimensions = checkDimensioning(0, 0, doorLoc[1], result, wallX, wallY)
 
             elif(inputOrder == 1):
-               pDimensions = checkDimensioning(wallX - doorLoc[1], wallX - result, wallY, wallY, wallX, wallY)
+               pDimensions = checkDimensioning(max(int(wallX) - int(doorLoc[1]),0), max(int(wallX) - int(result), 0), wallY, wallY, wallX, wallY)
             fOutput(f, pDimensions[0], pDimensions[1], pDimensions[2], pDimensions[3], "Door")
          elif(doorLoc[0] == 4):
             if(inputOrder == 0):
                pDimensions = checkDimensioning(wallX, wallX, doorLoc[1], result, wallX, wallY)
             elif(inputOrder == 1):
-               pDimensions = checkDimensioning(0, 0, wallY - doorLoc[1], wallY - result, wallX, wallY)
+               pDimensions = checkDimensioning(0, 0, max(int(wallY) - int(doorLoc[1]),0), max(int(wallY) - int(result),0), wallX, wallY)
             fOutput(f, pDimensions[0], pDimensions[1], pDimensions[2], pDimensions[3], "Door")
       else:
          #Unknown
