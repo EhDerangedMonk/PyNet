@@ -33,7 +33,7 @@ while(escape == 0):
          mess = line.encode('utf-8')
          c.send(mess)
          cline = cLine + 1
-      time.sleep(0.01)
+      time.sleep(4)
    maxLineCount = cLine
    f.close()
 

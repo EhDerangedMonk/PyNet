@@ -8,13 +8,15 @@
 #Issues:
 #			Pretty sure a couple chunks of code can now be cut by turning type into a variable earlier on
 #				Window and Door sections once had varying parameters and now they're the same apart from type
-
+#			ISSUE: UNABLE TO DETERMINE CORRECTNESS OF OBJECTS ON FIRST WALL
+#			ISSUE: DOESN'T ACTUALLY UPDATE FILE IN REAL TIME
 
 #####IMPORTS#####
 import socket
 import ipaddress
 import sys
 import re
+import os
 #####END IMPORTS#####
 
 #####FUNCTIONS#####
@@ -42,6 +44,8 @@ def fOutput(file, x1, x2, y1, y2, type):
    file.write("    \"x1\": " + str(x1) + "\n")
    file.write("  }\n")
    file.write("]")
+   file.flush()
+   os.fsync(file.fileno())
    return
    
 def fOutputNoComma(file, x1, x2, y1, y2, type):
@@ -54,6 +58,8 @@ def fOutputNoComma(file, x1, x2, y1, y2, type):
    file.write("    \"x1\": " + str(x1) + "\n")
    file.write("  }\n")
    file.write("]")
+   file.flush()
+   os.fsync(file.fileno())
    return
 
 ###Ensures that objects being placed within room do not exceed room boundaries
