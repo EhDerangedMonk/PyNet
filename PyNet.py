@@ -7,6 +7,7 @@ import atexit
 import math
 from time import sleep
 
+
 #make sure the camera is not in use
 os.system("kill $(ps aux | grep '[c]amera' | awk '{print $2}')")
 
@@ -53,9 +54,9 @@ b = Button()
 #Clean up on exiting so that the motors are off and the image is destroyed.
 @atexit.register
 def goodbye():
-        print "You are killing the PyNet"
-        #os.system("rm *.jpg")
-        movement.stop()
+    print "You are killing the PyNet"
+    #os.system("rm *.jpg")
+    movement.stop()
       
 def takePicture(name = 0):
     buzzer.on()
@@ -119,25 +120,27 @@ def botBackward(speed = 100):
 def getDistance(debug = False):
     distance = 0
     distanceList = []
-    for x in range(0, 20):
-        
+    
+    for x in range(0, 10):  
         distance = usound.read()
-            
         distanceList.append(distance)
         
     distanceList.sort()
-    if (len(distanceList) % 2 != 0):
-        distance = distanceList[int(math.floor(len(distanceList) / 2))] + distanceList[int(math.ceil(len(distanceList) / 2))]
-        distance = distance / 2
-    else:
-        distance = distanceList[int(len(distanceList) / 2)]
+    #if (len(distanceList) % 2 != 0):
+        #distance = distanceList[int(math.floor(len(distanceList) / 2))] + distanceList[int(math.ceil(len(distanceList) / 2))]
+        #distance = distance / 2
+    #else:
+        #distance = distanceList[int(len(distanceList) / 2)]
+    distance = distanceList[1]
+    
     
     if debug == True:
         print("-----")
         print(x + 1, " values were read and sorted")
         print(distanceList)
-        print("\nThe median is ", distance)
+        print("\nThe value is ", distance)
         print("-----")
+        
     return distance   
 
 
@@ -156,10 +159,10 @@ def alignToDistance(shortestDistance):
         
         distanceTurn = botRight(time = 0)
     
-    
-    threshold = 0.5
+    threshold = 0.8
     botLeftTurn = True
     distanceTurn = botLeft(time)
+    
     while (True):
         
         # A range is found that is close to the shortest point (Straight to the wall)
@@ -180,10 +183,6 @@ def alignToDistance(shortestDistance):
         elif (distanceTurn[1] > shortestDistance and botLeftTurn == False):
             botLeftTurn = False
             distanceTurn = botRight(time)
-        
-        #time = time - 0.01
-        #if (time <= 0):
-            #time = 0.05
 
         print(distanceTurn[1])  
 
@@ -215,19 +214,12 @@ def initialStraighten():
 def gotoWall():
     print("gotoWall")
 
-    while (botForward() >= 50):
+    while (botForward() >= 20):
         pass
     
-    while (botForward(speed = 100) >= 20):
-        pass
-    
-    
+
     movement.stop()
-    #sleep(1)
-    #while (botBackward() <= 28):
-        #pass
-    
-    #movement.stop()
+
     print("done")
     
 
@@ -264,33 +256,29 @@ if __name__ == "__main__":
     buttonFlag = False
     movement.stop()
     
-    menuInput = int(raw_input("1. Ultrasound test\n2. Bot Forward\n3. Start main program\n"))
-    # Get into initial position
-    
-    if menuInput == 1:
-        while not raw_input("Enter to get a input"):
-            print("Distance is ", getDistance(debug = True))
-    elif menuInput == 2:
-        while True:
-            botForward()
-    elif menuInput == 3:       
-        initialStraighten()
-        gotoWall()
-        rotateNextWall()
+    while(True):
+        menuInput = int(raw_input("1. Ultrasound test\n2. Bot Forward\n3. Take Picture\n4. Start main program\n"))
+        # Get into initial position
         
-        while True:
-            sleep(2)
+        if menuInput == 1:
+            while not raw_input("Enter to get a input"):
+                print("Distance is ", getDistance(debug = True))
+        elif menuInput == 2:
+            while True:
+                botForward()
+        elif menuInput == 3:
+            imageName = raw_input("Enter name of image: ")
+            takePicture(name = imageName)
+        elif menuInput == 4:
+            
+            initialStraighten()
+            gotoWall()
+            rotateNextWall()
+            
             name = 0
             while True:
                 #if (b.button_pressed() is True): #On/Off control with button
-                #if (buttonFlag is True):
-                                #buttonFlag = False
-                        #else:
-                                #buttonFlag = True
-                        #movement.stop()
-                        #sleep(2.0)
-                                    
-                #if (buttonFlag is False):            
+            
                 gotoWall()
                 
                 print("Done straighten")
@@ -304,17 +292,10 @@ if __name__ == "__main__":
 
                 #buttonFlag = False
 
-            #movement.stop()
-            #sleep(0.1)
-            #buzzer.on()
-            #sleep(0.1)
-            #buzzer.off()
-            #sleep(0.1)
-            #buzzer.on()
-            #sleep(0.1)
-            #buzzer.off()
-            #buttonFlag = False
-        
-
+                #movement.stop()
+                #sleep(0.1)
+                #buzzer.on()
+                #sleep(0.1)
+                #buzzer.off()
                 
         
