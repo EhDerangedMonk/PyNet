@@ -9,7 +9,8 @@
 #			Pretty sure a couple chunks of code can now be cut by turning type into a variable earlier on
 #				Window and Door sections once had varying parameters and now they're the same apart from type
 #			ISSUE: UNABLE TO DETERMINE CORRECTNESS OF OBJECTS ON FIRST WALL
-#			ISSUE: DOESN'T ACTUALLY UPDATE FILE IN REAL TIME
+#			presently assuming we are getting dimensions in order that we received for wall
+
 
 #####IMPORTS#####
 import socket
@@ -98,7 +99,7 @@ wallX = 0
 pDimensions = [0,0,0,0]
 connectionSuccess = 0
 pattern = re.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")
-
+objectLocation = [0,0]
 windowLoc  = [0,0] 	#0-unitialized, first number corresponds to wall		
 doorLoc = [0,0]
 
@@ -278,6 +279,19 @@ while mess != "THE END":				#while server says there is more to come
             elif(inputOrder == 1):
                pDimensions = checkDimensioning(0, 0, max(int(wallY) - int(doorLoc[1]),0), max(int(wallY) - int(result),0), wallX, wallY)
             fOutput(f, pDimensions[0], pDimensions[1], pDimensions[2], pDimensions[3], "Door")
+      elif mess[1] == 'E':
+         #It is a lectern
+         print("FOUND A LECTERN PART")
+         result = ''.join([i for i in mess if i.isdigit()])
+         if objectLocation[0] == 0:
+            print("0=0")
+            objectLocation[0] = result
+         elif objectLocation[1] == 0:
+            print("1=0")
+            objectLocation [1] = result
+            pDimensions = checkDimensioning(int(objectLocation[0]), int(objectLocation[0]) + 40, int(result), int(result) +40, wallX, wallY)
+            print(pDimensions)
+            fOutput(f, pDimensions[0], pDimensions[1], pDimensions[2], pDimensions[3], "Lectern")
       else:
          #Unknown
          print("UNKNOWN CODE")
